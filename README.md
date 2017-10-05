@@ -5,6 +5,9 @@ Wrangle CloudFormation parameters.
 
 ## Example use-cases
 
+CloudFormation template excerpt describing an ECS service to be provisioned
+onto an existing ECS cluster.
+
 ```yaml
 # cfn.yaml excerpt
 Parameters:
@@ -41,8 +44,11 @@ params="$(
 ```
 
 * `--template` loads supported Parameters from a CloudFormation template.
-* `--accept-defaults` omits keys that have a default in the CloudFormation template.
-* `--no-previous` means fail if a key has no default in the template and isn't specified on the command line. Without this option, those keys will be auto-filled as `"UsePreviousValue": true`.
+* `--accept-defaults` omits keys that have a default in the CloudFormation
+  template.
+* `--no-previous` means fail if a key has no default in the template and isn't
+  specified on the command line. Without this option, those keys will be
+  auto-filled as `"UsePreviousValue": true`.
 
 Resulting JSON:
 
@@ -97,26 +103,26 @@ aws cloudformation update-stack \
 
 ### Updating the CloudFormation stack
 
-Changing the stack, for example introducing a `FooApiKey` parameter.
+Changing the stack, for example introducing a `FooHost` parameter.
 
 ```diff
  # cfn.yaml excerpt
  Parameters:
-+  FooApiKey:
++  FooHost:
 +    Type: String
 +    Description: API key to access Foo service
    Greeting:
 ```
 
 ```sh
-params="$(cfn-params --template=cfn.yaml FooApiKey=hunter2)"
+params="$(cfn-params --template=cfn.yaml FooHost=foo.example.com)"
 ```
 
 Resulting JSON:
 
 ```json
 [
-  {"ParameterKey": "FooApiKey", "ParameterValue": "hunter2"},
+  {"ParameterKey": "FooHost", "ParameterValue": "foo.example.com"},
   {"ParameterKey": "Greeting", "UsePreviousValue": true},
   {"ParameterKey": "Recipient", "UsePreviousValue": true},
   {"ParameterKey": "ImageRepo", "UsePreviousValue": true},
@@ -132,11 +138,52 @@ aws cloudformation create-change-set \
   --stack-name=greeting \
   --change-set-name="$name" \
   --use-previous-template \
-  --parameters="$(cfn-params --template=cfn.yaml FooApiKey=hunter2)"
+  --parameters="$(cfn-params --template=cfn.yaml FooHost=foo.example.com)"
 
 # review Change Set here
 
 aws cloudformation execute-change-set \
   --stack-name=greeting \
   --change-set-name="$name"
+```
+
+### Introducing version-controlled parameters files
+
+Now we introduce some version-controlled files to the subset of parameters that
+make sense to exist in the codebase. `ImageTag` is not included in this file.
+
+```yaml
+# parameters-staging.yaml
+FooHost: foo.local
+Greeting: Howdy
+Recipient: team
+Cluster: staging
+```
+
+```yaml
+# parameters-production.yaml
+FooHost: foo.example.com
+Greeting: Hello
+Recipient: world
+Cluster: production
+```
+
+```sh
+params="$(
+  cfn-params --template=cfn.yaml --parameters-file=parameters-staging.yaml \
+    ImageTag=v3 Greeting=Bonjour
+)
+```
+
+Resulting JSON:
+
+```json
+[
+  {"ParameterKey": "FooHost", "ParameterValue": "foo.example.com"},
+  {"ParameterKey": "Greeting", "ParameterValue": "Bonjour"},
+  {"ParameterKey": "Recipient", "ParameterValue": "world"},
+  {"ParameterKey": "ImageRepo", "UsePreviousValue": true},
+  {"ParameterKey": "ImageTag", "ParameterValue": "v3"}
+  {"ParameterKey": "Cluster", "ParameterValue": "staging"}
+]
 ```
