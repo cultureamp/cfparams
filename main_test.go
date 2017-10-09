@@ -32,6 +32,7 @@ Parameters:
 
 func TestUsePreviousAll(t *testing.T) {
 	input := Input{TemplateBody: []byte(cfnTemplate)}
+	actual := mustGetParameterItems(t, input)
 	expected := []ParameterItem{
 		{ParameterKey: "Greeting", UsePreviousValue: true},
 		{ParameterKey: "Recipient", UsePreviousValue: true},
@@ -39,20 +40,59 @@ func TestUsePreviousAll(t *testing.T) {
 		{ParameterKey: "ImageTag", UsePreviousValue: true},
 		{ParameterKey: "Cluster", UsePreviousValue: true},
 	}
-
-	json, err := parametersJson(input)
-	require.NoError(t, err)
-	actual, err := itemsFromJson(json)
-	require.NoError(t, err)
-
 	assert.Equal(t, len(expected), len(actual))
 	for _, item := range actual {
 		assert.Contains(t, expected, item)
 	}
 }
 
-func itemsFromJson(j []byte) ([]ParameterItem, error) {
+func TestLaunchScenarioCLI(t *testing.T) {
+	input := Input{
+		TemplateBody:   cfnTemplate,
+		AcceptDefaults: true,
+		NoPrevious:     true,
+		ParametersCLI: []string{
+			"Recipient=world",
+			"ImageTag=v1",
+			"Cluster=nanoservices",
+		},
+	}
+	actual := mustGetParameterItems(t, input)
+	expected := []ParameterItem{
+		{ParameterKey: "Recipient", ParameterValue: "world"},
+		{ParameterKey: "ImageTag", ParameterValue: "v1"},
+		{ParameterKey: "Cluster", ParameterValue: "nanoservices"},
+	}
+	assert.Equal(t, len(expected), len(actual))
+	for _, item := range expected {
+		assert.Contains(t, actual, item)
+	}
+}
+
+func TestDeployScenario(t *testing.T) {
+	input := Input{
+		TemplateBody:  cfnTemplate,
+		ParametersCLI: []string{"ImageTag=v2"},
+	}
+	actual := mustGetParameterItems(t, input)
+	expected := []ParameterItem{
+		{ParameterKey: "Greeting", UsePreviousValue: true},
+		{ParameterKey: "Recipient", UsePreviousValue: true},
+		{ParameterKey: "ImageRepo", UsePreviousValue: true},
+		{ParameterKey: "ImageTag", ParameterValue: "v2"},
+		{ParameterKey: "Cluster", UsePreviousValue: true},
+	}
+	assert.Equal(t, len(expected), len(actual))
+	for _, item := range expected {
+		assert.Contains(t, actual, item)
+	}
+}
+
+func mustGetParameterItems(t *testing.T, input Input) []ParameterItem {
+	j, err := parametersJson(input)
+	require.NoError(t, err)
 	var items []ParameterItem
-	err := json.Unmarshal(j, &items)
-	return items, err
+	err = json.Unmarshal(j, &items)
+	require.NoError(t, err)
+	return items
 }
