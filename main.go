@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 
@@ -54,19 +53,19 @@ func main() {
 	if tplFile != "" {
 		data, err := ioutil.ReadFile(tplFile)
 		if err != nil {
-			log.Printf("cannot read CloudFormation template: %s", tplFile)
+			fmt.Fprintf(os.Stderr, "cannot read CloudFormation template: %s\n", tplFile)
 			os.Exit(1)
 		}
 		input.TemplateBody = data
 	} else {
-		log.Printf("CloudFormation template required, e.g: --template=cfn.yaml")
+		fmt.Fprintf(os.Stderr, "CloudFormation template required, e.g: --template=cfn.yaml\n")
 		os.Exit(1)
 	}
 
 	if paramFile != "" {
 		data, err := ioutil.ReadFile(paramFile)
 		if err != nil {
-			log.Printf("cannot read parameters file: %s", paramFile)
+			fmt.Fprintf(os.Stderr, "cannot read parameters file: %s\n", paramFile)
 			os.Exit(1)
 		}
 		input.ParametersYAML = data
@@ -77,7 +76,7 @@ func main() {
 
 	j, err := getJsonForInput(input)
 	if err != nil {
-		log.Printf("error: %s", err)
+		fmt.Fprintf(os.Stderr, "error: %s\n", err)
 		os.Exit(1)
 	}
 

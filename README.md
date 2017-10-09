@@ -175,7 +175,7 @@ Cluster: production
 
 ```sh
 params="$(
-  cfn-params --template=cfn.yaml --parameters-file=parameters-staging.yaml \
+  cfn-params --template=cfn.yaml --parameters=parameters-staging.yaml \
     ImageTag=v3 Greeting=Bonjour
 )
 ```
