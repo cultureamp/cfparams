@@ -44,10 +44,16 @@ type ParameterSpec struct {
 func main() {
 	input := &Input{}
 	var tplFile, paramFile string
+
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "\nUsage: %s [flags] [Key=value ...]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Produces JSON suitable for `aws cloudformation` CLI.\n\n")
+		flag.PrintDefaults()
+	}
 	flag.StringVar(&tplFile, "template", "", "CloudFormation YAML template path")
 	flag.StringVar(&paramFile, "parameters", "", "Parameters YAML file")
-	flag.BoolVar(&input.AcceptDefaults, "accept-defaults", false, "TODO")
-	flag.BoolVar(&input.NoPrevious, "no-previous", false, "TODO")
+	flag.BoolVar(&input.AcceptDefaults, "accept-defaults", false, "Accept defaults from CloudFormation template, omit from JSON")
+	flag.BoolVar(&input.NoPrevious, "no-previous", false, "Disable UsePreviousValue, fail if a parameter has no default and is not specified")
 	flag.Parse()
 
 	if tplFile != "" {
