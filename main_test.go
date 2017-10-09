@@ -31,7 +31,7 @@ Parameters:
 `)
 
 func TestUsePreviousAll(t *testing.T) {
-	input := Input{TemplateBody: []byte(cfnTemplate)}
+	input := &Input{TemplateBody: []byte(cfnTemplate)}
 	actual := mustGetParameterItems(t, input)
 	expected := []ParameterItem{
 		{ParameterKey: "Greeting", UsePreviousValue: true},
@@ -47,7 +47,7 @@ func TestUsePreviousAll(t *testing.T) {
 }
 
 func TestLaunchScenarioCLI(t *testing.T) {
-	input := Input{
+	input := &Input{
 		TemplateBody:   cfnTemplate,
 		AcceptDefaults: true,
 		NoPrevious:     true,
@@ -69,8 +69,28 @@ func TestLaunchScenarioCLI(t *testing.T) {
 	}
 }
 
+func TestLaunchScenarioFile(t *testing.T) {
+	input := &Input{
+		TemplateBody:   cfnTemplate,
+		AcceptDefaults: true,
+		NoPrevious:     true,
+		ParametersCLI:  []string{"ImageTag=v1"},
+		ParametersYAML: []byte("---\nRecipient: world\nCluster: nanoservices\n"),
+	}
+	actual := mustGetParameterItems(t, input)
+	expected := []ParameterItem{
+		{ParameterKey: "Recipient", ParameterValue: "world"},
+		{ParameterKey: "ImageTag", ParameterValue: "v1"},
+		{ParameterKey: "Cluster", ParameterValue: "nanoservices"},
+	}
+	assert.Equal(t, len(expected), len(actual))
+	for _, item := range expected {
+		assert.Contains(t, actual, item)
+	}
+}
+
 func TestDeployScenario(t *testing.T) {
-	input := Input{
+	input := &Input{
 		TemplateBody:  cfnTemplate,
 		ParametersCLI: []string{"ImageTag=v2"},
 	}
@@ -88,8 +108,8 @@ func TestDeployScenario(t *testing.T) {
 	}
 }
 
-func mustGetParameterItems(t *testing.T, input Input) []ParameterItem {
-	j, err := parametersJson(input)
+func mustGetParameterItems(t *testing.T, input *Input) []ParameterItem {
+	j, err := getJsonForInput(input)
 	require.NoError(t, err)
 	var items []ParameterItem
 	err = json.Unmarshal(j, &items)

@@ -2,7 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 	"strings"
 
 	yaml "gopkg.in/yaml.v2"
@@ -13,6 +17,7 @@ type Input struct {
 	AcceptDefaults bool
 	NoPrevious     bool
 	ParametersCLI  []string
+	ParametersYAML []byte
 	Parameters     map[string]string
 }
 
@@ -37,14 +42,52 @@ type ParameterSpec struct {
 	HasDefault bool
 }
 
-func parametersJson(input Input) ([]byte, error) {
-	input.Parameters = make(map[string]string)
-	for _, kv := range input.ParametersCLI {
-		pair := strings.SplitN(kv, "=", 2)
-		if len(pair) != 2 {
-			return nil, fmt.Errorf("expected Key=value, got %s", pair)
+func main() {
+	input := &Input{}
+	var tplFile, paramFile string
+	flag.StringVar(&tplFile, "template", "", "CloudFormation YAML template path")
+	flag.StringVar(&paramFile, "parameters", "", "Parameters YAML file")
+	flag.BoolVar(&input.AcceptDefaults, "accept-defaults", false, "TODO")
+	flag.BoolVar(&input.NoPrevious, "no-previous", false, "TODO")
+	flag.Parse()
+
+	if tplFile != "" {
+		data, err := ioutil.ReadFile(tplFile)
+		if err != nil {
+			log.Printf("cannot read CloudFormation template: %s", tplFile)
+			os.Exit(1)
 		}
-		input.Parameters[pair[0]] = pair[1]
+		input.TemplateBody = data
+	} else {
+		log.Printf("CloudFormation template required, e.g: --template=cfn.yaml")
+		os.Exit(1)
+	}
+
+	if paramFile != "" {
+		data, err := ioutil.ReadFile(paramFile)
+		if err != nil {
+			log.Printf("cannot read parameters file: %s", paramFile)
+			os.Exit(1)
+		}
+		input.ParametersYAML = data
+	}
+
+	// remaining positional args
+	input.ParametersCLI = flag.Args()
+
+	j, err := getJsonForInput(input)
+	if err != nil {
+		log.Printf("error: %s", err)
+		os.Exit(1)
+	}
+
+	os.Stdout.Write(j)
+	os.Stdout.Write([]byte("\n"))
+}
+
+func getJsonForInput(input *Input) ([]byte, error) {
+	if err := parseParameters(input); err != nil {
+		return nil, err
 	}
 
 	var t ParsedTemplate
@@ -54,9 +97,13 @@ func parametersJson(input Input) ([]byte, error) {
 		return nil, err
 	}
 
-	specs := []ParameterSpec{}
+	specs := make(map[string]ParameterSpec)
 	for name, parsed := range t.Parameters {
-		specs = append(specs, ParameterSpec{Name: name, HasDefault: parsed.Default != ""})
+		specs[name] = ParameterSpec{Name: name, HasDefault: parsed.Default != ""}
+	}
+
+	if err := validateParameters(input.Parameters, specs); err != nil {
+		return nil, err
 	}
 
 	items := []ParameterItem{}
@@ -81,5 +128,39 @@ func parametersJson(input Input) ([]byte, error) {
 		}
 	}
 
-	return json.Marshal(items)
+	return json.MarshalIndent(items, "", "  ")
+}
+
+func parseParameters(input *Input) error {
+	input.Parameters = make(map[string]string)
+
+	// Parameters from YAML file
+	err := yaml.Unmarshal(input.ParametersYAML, input.Parameters)
+	if err != nil {
+		return err
+	}
+
+	// Parameters from CLI
+	for _, kv := range input.ParametersCLI {
+		pair := strings.SplitN(kv, "=", 2)
+		if len(pair) != 2 {
+			return fmt.Errorf("expected Key=value, got %s", pair)
+		}
+		input.Parameters[pair[0]] = pair[1]
+	}
+
+	return nil
+}
+
+func validateParameters(params map[string]string, specs map[string]ParameterSpec) error {
+	unexpected := []string{}
+	for name, _ := range params {
+		if _, ok := specs[name]; !ok {
+			unexpected = append(unexpected, name)
+		}
+	}
+	if len(unexpected) > 0 {
+		return fmt.Errorf("specified parameters not in template: %s", strings.Join(unexpected, ", "))
+	}
+	return nil
 }
