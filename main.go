@@ -23,7 +23,7 @@ type Input struct {
 type ParameterItem struct {
 	ParameterKey     string `json:"ParameterKey,omitempty"`
 	ParameterValue   string `json:"ParameterValue,omitempty"`
-	UsePreviousValue bool   `json:UsePreviousValue,omitempty"`
+	UsePreviousValue bool   `json:"UsePreviousValue,omitempty"`
 }
 
 type ParsedParameterSpec struct {
