@@ -106,6 +106,7 @@ func getJsonForInput(input *Input) ([]byte, error) {
 	}
 
 	items := []ParameterItem{}
+	missingNames := []string{}
 	for _, spec := range specs {
 		if value, ok := input.Parameters[spec.Name]; ok {
 			// specified in parameters
@@ -123,8 +124,12 @@ func getJsonForInput(input *Input) ([]byte, error) {
 				UsePreviousValue: true,
 			})
 		} else {
-			return nil, fmt.Errorf("no parameter found for %s", spec.Name)
+			missingNames = append(missingNames, spec.Name)
 		}
+	}
+
+	if len(missingNames) > 0 {
+		return nil, fmt.Errorf("missing parameters: %s", strings.Join(missingNames, ", "))
 	}
 
 	return json.MarshalIndent(items, "", "  ")
