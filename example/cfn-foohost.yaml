@@ -1,0 +1,22 @@
+Parameters:
+  FooHost:
+    Type: String
+    Description: API key to access Foo service
+  Greeting:
+    Type: String
+    Description: greeting message to send
+    Default: Hello
+  Recipient:
+    Description: name of the greeting recipient
+    Type: String
+  ImageRepo:
+    Type: String
+    Description: repository of Docker image to run
+    Default: "123.dkr.ecr.us-east-1.amazonaws.com/greeting"
+  ImageTag:
+    Type: String
+    Description: tag of Docker image to run
+    Default: latest
+  Cluster:
+    Description: ECS cluster ID to run service on
+    Type: String

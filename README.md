@@ -72,8 +72,6 @@ aws cloudformation create-stack \
   --parameters="$params"
 ```
 
-`cfn-params` produces the following JSON:
-
 
 ### Deploying a new version of the app
 
@@ -120,7 +118,7 @@ Changing the stack, for example introducing a `FooHost` parameter.
 ```
 
 ```sh
-params="$(cfn-params --template=cfn.yaml FooHost=foo.example.com)"
+params="$(cfn-params --template=cfn-foohost.yaml FooHost=foo.example.com)"
 ```
 
 Resulting JSON:
@@ -175,7 +173,7 @@ Cluster: production
 
 ```sh
 params="$(
-  cfn-params --template=cfn.yaml --parameters=parameters-staging.yaml \
+  cfn-params --template=cfn-foohost.yaml --parameters=parameters-staging.yaml \
     ImageTag=v3 Greeting=Bonjour
 )
 ```
@@ -184,9 +182,9 @@ Resulting JSON:
 
 ```json
 [
-  {"ParameterKey": "FooHost", "ParameterValue": "foo.example.com"},
-  {"ParameterKey": "Greeting", "ParameterValue": "Bonjour"},
-  {"ParameterKey": "Recipient", "ParameterValue": "world"},
+  {"ParameterKey": "FooHost", "ParameterValue": "foo.local"},
+  {"ParameterKey": "Greeting", "ParameterValue": "Howdy"},
+  {"ParameterKey": "Recipient", "ParameterValue": "team"},
   {"ParameterKey": "ImageRepo", "UsePreviousValue": true},
   {"ParameterKey": "ImageTag", "ParameterValue": "v3"},
   {"ParameterKey": "Cluster", "ParameterValue": "staging"}

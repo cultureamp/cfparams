@@ -1,0 +1,5 @@
+# parameters-production.yaml
+FooHost: foo.example.com
+Greeting: Hello
+Recipient: world
+Cluster: production
