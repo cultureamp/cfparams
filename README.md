@@ -3,6 +3,11 @@ cfn-params
 
 Wrangle CloudFormation parameters.
 
+Reads expected parameter keys from a CloudFormation template, accepts values
+from command line or YAML file, emits JSON suitable for `aws cloudformation
+*-stack --parameters="..."` commands. Supports the use of default and previous
+values.
+
 ## Example use-cases
 
 CloudFormation template excerpt describing an ECS service to be provisioned
@@ -126,7 +131,7 @@ Resulting JSON:
   {"ParameterKey": "Greeting", "UsePreviousValue": true},
   {"ParameterKey": "Recipient", "UsePreviousValue": true},
   {"ParameterKey": "ImageRepo", "UsePreviousValue": true},
-  {"ParameterKey": "ImageTag", "UsePreviousValue": true}
+  {"ParameterKey": "ImageTag", "UsePreviousValue": true},
   {"ParameterKey": "Cluster", "UsePreviousValue": true}
 ]
 ```
@@ -183,7 +188,7 @@ Resulting JSON:
   {"ParameterKey": "Greeting", "ParameterValue": "Bonjour"},
   {"ParameterKey": "Recipient", "ParameterValue": "world"},
   {"ParameterKey": "ImageRepo", "UsePreviousValue": true},
-  {"ParameterKey": "ImageTag", "ParameterValue": "v3"}
+  {"ParameterKey": "ImageTag", "ParameterValue": "v3"},
   {"ParameterKey": "Cluster", "ParameterValue": "staging"}
 ]
 ```
