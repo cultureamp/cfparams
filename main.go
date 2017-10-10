@@ -95,6 +95,7 @@ func getJsonForInput(input *Input) ([]byte, error) {
 		return nil, err
 	}
 
+	// parse CloudFormation template
 	var t ParsedTemplate
 	t.Parameters = make(map[string]ParsedParameterSpec)
 	err := yaml.Unmarshal(input.TemplateBody, &t)

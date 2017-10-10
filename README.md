@@ -1,5 +1,5 @@
-cfn-params
-==========
+cfparams
+========
 
 Wrangle CloudFormation parameters.
 
@@ -43,7 +43,7 @@ from the template, specify all other parameters.
 
 ```sh
 params="$(
-  cfn-params --template=cfn.yaml --accept-defaults --no-previous \
+  cfparams --template=cfn.yaml --accept-defaults --no-previous \
     Recipient=world ImageTag=v1 Cluster=nanoservices
 )"
 ```
@@ -79,7 +79,7 @@ Deploying a new version of the app, e.g. from CI. Only `ImageTag` should
 change, all other parameters use previous value.
 
 ```sh
-params="$(cfn-params --template=cfn.yaml ImageTag=v2)"
+params="$(cfparams --template=cfn.yaml ImageTag=v2)"
 ```
 
 Resulting JSON:
@@ -118,7 +118,7 @@ Changing the stack, for example introducing a `FooHost` parameter.
 ```
 
 ```sh
-params="$(cfn-params --template=cfn-foohost.yaml FooHost=foo.example.com)"
+params="$(cfparams --template=cfn-foohost.yaml FooHost=foo.example.com)"
 ```
 
 Resulting JSON:
@@ -141,7 +141,7 @@ aws cloudformation create-change-set \
   --stack-name=greeting \
   --change-set-name="$name" \
   --use-previous-template \
-  --parameters="$(cfn-params --template=cfn.yaml FooHost=foo.example.com)"
+  --parameters="$(cfparams --template=cfn.yaml FooHost=foo.example.com)"
 
 # review Change Set here
 
@@ -173,7 +173,7 @@ Cluster: production
 
 ```sh
 params="$(
-  cfn-params --template=cfn-foohost.yaml --parameters=parameters-staging.yaml \
+  cfparams --template=cfn-foohost.yaml --parameters=parameters-staging.yaml \
     ImageTag=v3 Greeting=Bonjour
 )
 ```

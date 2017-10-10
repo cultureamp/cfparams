@@ -63,6 +63,7 @@ func TestLaunchScenarioCLI(t *testing.T) {
 		{ParameterKey: "ImageTag", ParameterValue: "v1"},
 		{ParameterKey: "Cluster", ParameterValue: "nanoservices"},
 	}
+
 	assert.Equal(t, len(expected), len(actual))
 	for _, item := range expected {
 		assert.Contains(t, actual, item)
