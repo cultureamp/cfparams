@@ -11,6 +11,9 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+// see Makefile
+var Version = "dev"
+
 type Input struct {
 	TemplateBody   []byte
 	AcceptDefaults bool
@@ -46,7 +49,8 @@ func main() {
 	var tplFile, paramFile string
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "\nUsage: %s [flags] [Key=value ...]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "cfparams %s\n\n", Version)
+		fmt.Fprintf(os.Stderr, "Usage: %s [flags] [Key=value ...]\n\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "Produces JSON suitable for `aws cloudformation` CLI.\n\n")
 		flag.PrintDefaults()
 	}
