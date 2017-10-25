@@ -109,6 +109,15 @@ func TestDeployScenario(t *testing.T) {
 	}
 }
 
+func TestBlankDefault(t *testing.T) {
+	input := &Input{
+		TemplateBody:   []byte("Parameters:\n  Foo:\n    Default: \"\"\n"),
+		AcceptDefaults: true,
+	}
+	actual := mustGetParameterItems(t, input)
+	assert.Equal(t, 0, len(actual))
+}
+
 func mustGetParameterItems(t *testing.T, input *Input) []ParameterItem {
 	j, err := getJsonForInput(input)
 	require.NoError(t, err)
