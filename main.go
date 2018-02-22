@@ -30,9 +30,7 @@ type ParameterItem struct {
 }
 
 type ParsedParameterSpec struct {
-	Type        string `yaml:"Type"`
-	Description string `yaml:"Description"`
-	Default     string `yaml:"Default"`
+	Default *string `yaml:"Default",omitempty`
 }
 
 type ParsedTemplate struct {
@@ -109,7 +107,7 @@ func getJsonForInput(input *Input) ([]byte, error) {
 
 	specs := make(map[string]ParameterSpec)
 	for name, parsed := range t.Parameters {
-		specs[name] = ParameterSpec{Name: name, HasDefault: parsed.Default != ""}
+		specs[name] = ParameterSpec{Name: name, HasDefault: parsed.Default != nil}
 	}
 
 	if err := validateParameters(input.Parameters, specs); err != nil {
