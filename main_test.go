@@ -118,6 +118,44 @@ func TestBlankDefault(t *testing.T) {
 	assert.Equal(t, 0, len(actual))
 }
 
+func TestJsonUsePreviousValue(t *testing.T) {
+	input := &Input{
+		TemplateBody: []byte("Parameters:\n  Foo:\n    Description: \"may be blank\"\n"),
+	}
+	j := mustGetJson(t, input)
+	assert.Contains(t, j, "ParameterKey")
+	assert.NotContains(t, j, "ParameterValue")
+	assert.Contains(t, j, "UsePreviousValue")
+}
+
+func TestJsonNonBlankParameterFileValue(t *testing.T) {
+	input := &Input{
+		TemplateBody:   []byte("Parameters:\n  Foo:\n    Description: \"may be blank\"\n"),
+		ParametersYAML: []byte("---\nFoo: bar\n"),
+	}
+	j := mustGetJson(t, input)
+	assert.Contains(t, j, "ParameterKey")
+	assert.Contains(t, j, "ParameterValue")
+	assert.NotContains(t, j, "UsePreviousValue")
+}
+
+func TestJsonBlankParameterFileValue(t *testing.T) {
+	input := &Input{
+		TemplateBody:   []byte("Parameters:\n  Foo:\n    Description: \"may be blank\"\n"),
+		ParametersYAML: []byte("---\nFoo:\n"),
+	}
+	j := mustGetJson(t, input)
+	assert.Contains(t, j, "ParameterKey")
+	assert.Contains(t, j, "ParameterValue")
+	assert.NotContains(t, j, "UsePreviousValue")
+}
+
+func mustGetJson(t *testing.T, input *Input) string {
+	j, err := getJsonForInput(input)
+	require.NoError(t, err)
+	return string(j)
+}
+
 func mustGetParameterItems(t *testing.T, input *Input) []ParameterItem {
 	j, err := getJsonForInput(input)
 	require.NoError(t, err)
