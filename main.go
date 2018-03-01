@@ -24,7 +24,7 @@ type Input struct {
 }
 
 type ParameterItem struct {
-	ParameterKey     string `json:"ParameterKey,omitempty"`
+	ParameterKey     string `json:"ParameterKey"`
 	ParameterValue   string `json:"ParameterValue,omitempty"`
 	UsePreviousValue bool   `json:"UsePreviousValue,omitempty"`
 }
