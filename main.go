@@ -24,9 +24,19 @@ type Input struct {
 }
 
 type ParameterItem struct {
-	ParameterKey     string `json:"ParameterKey,omitempty"`
-	ParameterValue   string `json:"ParameterValue,omitempty"`
-	UsePreviousValue bool   `json:"UsePreviousValue,omitempty"`
+	ParameterKey     string
+	ParameterValue   string
+	UsePreviousValue bool
+}
+
+type ParameterItemWithValue struct {
+	ParameterKey   string `json:"ParameterKey"`
+	ParameterValue string `json:"ParameterValue"`
+}
+
+type ParameterItemUsePrevious struct {
+	ParameterKey     string `json:"ParameterKey"`
+	UsePreviousValue bool   `json:"UsePreviousValue"`
 }
 
 type ParsedParameterSpec struct {
@@ -176,4 +186,18 @@ func validateParameters(params map[string]string, specs map[string]ParameterSpec
 		return fmt.Errorf("specified parameters not in template: %s", strings.Join(unexpected, ", "))
 	}
 	return nil
+}
+
+func (p ParameterItem) MarshalJSON() ([]byte, error) {
+	if p.UsePreviousValue {
+		return json.Marshal(ParameterItemUsePrevious{
+			ParameterKey:     p.ParameterKey,
+			UsePreviousValue: true,
+		})
+	} else {
+		return json.Marshal(ParameterItemWithValue{
+			ParameterKey:   p.ParameterKey,
+			ParameterValue: p.ParameterValue,
+		})
+	}
 }
