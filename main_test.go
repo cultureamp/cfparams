@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/cultureamp/cfparams/parameterstore"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -148,6 +149,20 @@ func TestJsonBlankParameterFileValue(t *testing.T) {
 	assert.Contains(t, j, "ParameterKey")
 	assert.Contains(t, j, "ParameterValue")
 	assert.NotContains(t, j, "UsePreviousValue")
+}
+
+func TestCustomYamlTags(t *testing.T) {
+	parameterstore.Fake(map[string]string{
+		"/path/to/secret": "hunter2",
+	})
+	input := &Input{
+		TemplateBody:   []byte("Parameters:\n  Secret:\n"),
+		ParametersYAML: []byte("Secret: !ParameterStore /path/to/secret\n"),
+	}
+	item := mustGetParameterItems(t, input)[0]
+	require.Equal(t, "Secret", item.ParameterKey)
+	require.Equal(t, "hunter2", item.ParameterValue)
+	require.Equal(t, false, item.UsePreviousValue)
 }
 
 func mustGetJson(t *testing.T, input *Input) string {

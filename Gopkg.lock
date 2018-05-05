@@ -14,6 +14,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  branch = "v2"
+  name = "github.com/sanathkr/go-yaml"
+  packages = ["."]
+  revision = "ed9d249f429b3f5a69f80a7abef6bfce81fef894"
+
+[[projects]]
   name = "github.com/stretchr/testify"
   packages = [
     "assert",
@@ -22,15 +28,9 @@
   revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
   version = "v1.2.1"
 
-[[projects]]
-  name = "gopkg.in/yaml.v2"
-  packages = ["."]
-  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
-  version = "v2.2.1"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1c9686fdea86f74e75e14d32b0b6a3af7613adc7012ffc04a42a1f4ded96c1af"
+  inputs-digest = "9a401f253b71924b736117c50728f1e0647e101d9e1f6521b970b3e01c27205b"
   solver-name = "gps-cdcl"
   solver-version = 1

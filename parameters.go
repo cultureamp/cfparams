@@ -3,9 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"reflect"
 	"strings"
 
-	yaml "gopkg.in/yaml.v2"
+	"github.com/cultureamp/cfparams/parameterstore"
+	yaml "github.com/sanathkr/go-yaml"
 )
 
 type ParameterItem struct {
@@ -26,8 +29,21 @@ type ParameterItemUsePrevious struct {
 	UsePreviousValue bool   `json:"UsePreviousValue"`
 }
 
+type parameterStoreUnmarshaler struct{}
+
+func (t *parameterStoreUnmarshaler) UnmarshalYAMLTag(tag string, fieldValue reflect.Value) reflect.Value {
+	value, err := parameterstore.Get(fieldValue.String())
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		value = "" // crash instead?
+	}
+	return reflect.ValueOf(value)
+}
+
 func parseParameters(input *Input) error {
 	input.Parameters = make(map[string]string)
+
+	yaml.RegisterTagUnmarshaler("!ParameterStore", &parameterStoreUnmarshaler{})
 
 	// Parameters from YAML file
 	err := yaml.Unmarshal(input.ParametersYAML, input.Parameters)
