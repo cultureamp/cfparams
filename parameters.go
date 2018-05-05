@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"reflect"
 	"strings"
@@ -32,7 +33,9 @@ type ParameterItemUsePrevious struct {
 type parameterStoreUnmarshaler struct{}
 
 func (t *parameterStoreUnmarshaler) UnmarshalYAMLTag(tag string, fieldValue reflect.Value) reflect.Value {
-	value, err := parameterstore.Get(fieldValue.String())
+	name := fieldValue.String()
+	log.New(os.Stderr, "", log.LstdFlags).Printf("ParameterStore: GetParameter(%#v)\n", name)
+	value, err := parameterstore.Get(name)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		value = "" // crash instead?
