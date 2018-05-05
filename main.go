@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
-
-	yaml "gopkg.in/yaml.v2"
 )
 
 // see Makefile
@@ -21,35 +19,6 @@ type Input struct {
 	ParametersCLI  []string
 	ParametersYAML []byte
 	Parameters     map[string]string
-}
-
-type ParameterItem struct {
-	ParameterKey     string
-	ParameterValue   string
-	UsePreviousValue bool
-}
-
-type ParameterItemWithValue struct {
-	ParameterKey   string `json:"ParameterKey"`
-	ParameterValue string `json:"ParameterValue"`
-}
-
-type ParameterItemUsePrevious struct {
-	ParameterKey     string `json:"ParameterKey"`
-	UsePreviousValue bool   `json:"UsePreviousValue"`
-}
-
-type ParsedParameterSpec struct {
-	Default *string `yaml:"Default",omitempty`
-}
-
-type ParsedTemplate struct {
-	Parameters map[string]ParsedParameterSpec `yaml:"Parameters"`
-}
-
-type ParameterSpec struct {
-	Name       string
-	HasDefault bool
 }
 
 func main() {
@@ -107,17 +76,9 @@ func getJsonForInput(input *Input) ([]byte, error) {
 		return nil, err
 	}
 
-	// parse CloudFormation template
-	var t ParsedTemplate
-	t.Parameters = make(map[string]ParsedParameterSpec)
-	err := yaml.Unmarshal(input.TemplateBody, &t)
+	specs, err := parseTemplate(input.TemplateBody)
 	if err != nil {
 		return nil, err
-	}
-
-	specs := make(map[string]ParameterSpec)
-	for name, parsed := range t.Parameters {
-		specs[name] = ParameterSpec{Name: name, HasDefault: parsed.Default != nil}
 	}
 
 	if err := validateParameters(input.Parameters, specs); err != nil {
@@ -152,52 +113,4 @@ func getJsonForInput(input *Input) ([]byte, error) {
 	}
 
 	return json.MarshalIndent(items, "", "  ")
-}
-
-func parseParameters(input *Input) error {
-	input.Parameters = make(map[string]string)
-
-	// Parameters from YAML file
-	err := yaml.Unmarshal(input.ParametersYAML, input.Parameters)
-	if err != nil {
-		return err
-	}
-
-	// Parameters from CLI
-	for _, kv := range input.ParametersCLI {
-		pair := strings.SplitN(kv, "=", 2)
-		if len(pair) != 2 {
-			return fmt.Errorf("expected Key=value, got %s", pair)
-		}
-		input.Parameters[pair[0]] = pair[1]
-	}
-
-	return nil
-}
-
-func validateParameters(params map[string]string, specs map[string]ParameterSpec) error {
-	unexpected := []string{}
-	for name, _ := range params {
-		if _, ok := specs[name]; !ok {
-			unexpected = append(unexpected, name)
-		}
-	}
-	if len(unexpected) > 0 {
-		return fmt.Errorf("specified parameters not in template: %s", strings.Join(unexpected, ", "))
-	}
-	return nil
-}
-
-func (p ParameterItem) MarshalJSON() ([]byte, error) {
-	if p.UsePreviousValue {
-		return json.Marshal(ParameterItemUsePrevious{
-			ParameterKey:     p.ParameterKey,
-			UsePreviousValue: true,
-		})
-	} else {
-		return json.Marshal(ParameterItemWithValue{
-			ParameterKey:   p.ParameterKey,
-			ParameterValue: p.ParameterValue,
-		})
-	}
 }
