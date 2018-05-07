@@ -1,6 +1,6 @@
 package main
 
-import yaml "gopkg.in/yaml.v2"
+import yaml "github.com/sanathkr/go-yaml"
 
 type ParsedTemplate struct {
 	Parameters map[string]ParsedParameterSpec `yaml:"Parameters"`
