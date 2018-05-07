@@ -1,1 +1,8 @@
+# default `go build` output binary
+/cfparams
+
+# dependencies tracked by dep
 /vendor/
+
+# `make release` output directory
+/build/
