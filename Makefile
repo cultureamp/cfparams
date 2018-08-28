@@ -2,7 +2,7 @@ PACKAGE = github.com/cultureamp/cfparams
 VERSION = $(shell git describe --tags --candidates=1 --dirty)
 FLAGS=-X main.Version=$(VERSION) -s -w
 
-cfparams: main.go parameters.go template.go parameterstore/store.go
+cfparams: main.go parameters.go tags.go template.go parameterstore/store.go
 	go build -ldflags="$(FLAGS)"
 
 .PHONY: install

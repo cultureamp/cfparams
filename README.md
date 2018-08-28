@@ -190,3 +190,44 @@ Resulting JSON:
   {"ParameterKey": "Cluster", "ParameterValue": "staging"}
 ]
 ```
+
+### Bonus feature: Stack Tags
+
+CloudFormation stacks can be tagged, and those tags flow into all taggable
+resources the stack creates. As with `--parameters`, the `aws cloudformation`
+commands expect these in an awkward format. `cfparams --tags file.yaml` helps.
+
+```sh
+aws cloudformation create-stack \
+  ... \
+  --tags "$(cfparams --tags=tags-production.yaml)" \
+  ...
+```
+
+```yaml
+# tags-production.yaml
+Name: Widgets as a Service
+asset: widget-api
+workload: production
+```
+
+```sh
+cfparams --tags=tags-production.yaml
+```
+
+```json
+[
+  {
+    "Key": "Name",
+    "Value": "Widgets as a Service"
+  },
+  {
+    "Key": "asset",
+    "Value": "widget-api"
+  },
+  {
+    "Key": "workload",
+    "Value": "production"
+  }
+]
+```
