@@ -43,6 +43,50 @@ func (t *parameterStoreUnmarshaler) UnmarshalYAMLTag(tag string, fieldValue refl
 	return reflect.ValueOf(value)
 }
 
+func getJsonForInputParams(input *Input) ([]byte, error) {
+	if err := parseParameters(input); err != nil {
+		return nil, err
+	}
+
+	specs, err := parseTemplate(input.TemplateBody)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := validateParameters(input.Parameters, specs); err != nil {
+		return nil, err
+	}
+
+	items := []ParameterItem{}
+	missingNames := []string{}
+	for _, spec := range specs {
+		if value, ok := input.Parameters[spec.Name]; ok {
+			// specified in parameters
+			items = append(items, ParameterItem{
+				ParameterKey:   spec.Name,
+				ParameterValue: value,
+			})
+		} else if input.AcceptDefaults && spec.HasDefault {
+			// has default; do not override
+			continue
+		} else if !input.NoPrevious {
+			// use previous value
+			items = append(items, ParameterItem{
+				ParameterKey:     spec.Name,
+				UsePreviousValue: true,
+			})
+		} else {
+			missingNames = append(missingNames, spec.Name)
+		}
+	}
+
+	if len(missingNames) > 0 {
+		return nil, fmt.Errorf("missing parameters: %s", strings.Join(missingNames, ", "))
+	}
+
+	return json.MarshalIndent(items, "", "  ")
+}
+
 func parseParameters(input *Input) error {
 	input.Parameters = make(map[string]string)
 
