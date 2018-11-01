@@ -8,6 +8,19 @@ from command line or YAML file, emits JSON suitable for `aws cloudformation
 *-stack --parameters="..."` commands. Supports the use of default and previous
 values.
 
+## Installation Instructions
+
+* Download the latest version from the [release page](https://github.com/cultureamp/cfparams/releases), e.g currently for macOS `cfparams-v1.1.0-darwin-amd64.tar.gz` and currently for linux `cfparams-v1.1.0-linux-amd64.tar.gz` 
+* Unzip the downloaded folder `tar -zxvf cfparams-v1.1.0-darwin-amd64.tar.gz`
+* Move `cfparams` to your path, e.g: `mv cfparams /usr/local/bin`
+* To check whether your installation is successful, run the command `cfparams` and the output would be similar to:
+    ```sh
+    CloudFormation template or tags file required
+        e.g: --template=cloudformation.yaml
+        e.g: --tags=tags-foo.yaml
+    ```
+* If it still doesn't work you may need to `hash -r` to clear the path cache or restart the shell
+
 ## Example use-cases
 
 CloudFormation template excerpt describing an ECS service to be provisioned
