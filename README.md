@@ -244,3 +244,37 @@ cfparams --tags=tags-production.yaml
   }
 ]
 ```
+
+Tags can also be overridden and added to on the command line, just like parameters can:
+
+```yaml
+#tags-test.yaml
+asset: buildkite
+workload: delivery
+buildkite-group: build-test
+```
+
+```sh
+> cfparams --tags=tags-test.yaml buildkite-group=build-pylons message=extra-tag
+```
+
+```json
+[
+  {
+    "Key": "buildkite-group",
+    "Value": "build-pylons"
+  },
+  {
+    "Key": "message",
+    "Value": "extra-tag"
+  },
+  {
+    "Key": "asset",
+    "Value": "buildkite"
+  },
+  {
+    "Key": "workload",
+    "Value": "delivery"
+  }
+]
+```
