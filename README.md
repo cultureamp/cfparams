@@ -10,11 +10,13 @@ values.
 
 ## Installation Instructions
 
-* Download the latest version from the [release page](https://github.com/cultureamp/cfparams/releases), e.g currently for macOS `cfparams-v1.1.0-darwin-amd64.tar.gz` and currently for linux `cfparams-v1.1.0-linux-amd64.tar.gz` 
-* Unzip the downloaded folder `tar -zxvf cfparams-v1.1.0-darwin-amd64.tar.gz`
+* If you use [Homebrew](https://brew.sh/), you can simply run: `brew install cultureamp/tap/cfparams`.
+* Alternatively, if you want the latest version, get it from the [release page](https://github.com/cultureamp/cfparams/releases), e.g currently for macOS `cfparams-v1.2.0-darwin-amd64.tar.gz` and currently for linux `cfparams-v1.2.0-linux-amd64.tar.gz` 
+* Unzip the downloaded folder `tar -zxvf cfparams-v1.2.0-darwin-amd64.tar.gz`
 * Move `cfparams` to your path, e.g: `mv cfparams /usr/local/bin`
 * To check whether your installation is successful, run the command `cfparams` and the output would be similar to:
-    ```sh
+    ```shellsession
+    $ cfparams
     CloudFormation template or tags file required
         e.g: --template=cloudformation.yaml
         e.g: --tags=tags-foo.yaml
