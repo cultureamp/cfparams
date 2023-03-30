@@ -1,11 +1,16 @@
 module github.com/cultureamp/cfparams
 
+go 1.20
+
 require (
-	github.com/aws/aws-sdk-go v1.13.42
-	github.com/davecgh/go-spew v1.1.0
-	github.com/go-ini/ini v1.36.0
-	github.com/jmespath/go-jmespath v0.0.0-20160202185014-0b12d6b521d8
-	github.com/pmezard/go-difflib v1.0.0
+	github.com/aws/aws-sdk-go v1.44.232
 	github.com/sanathkr/go-yaml v0.0.0-20170819195128-ed9d249f429b
-	github.com/stretchr/testify v1.2.1
+	github.com/stretchr/testify v1.8.2
+)
+
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
