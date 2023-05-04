@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+
+    outputs:
+      version_tag: ${{ steps.tag-release.outputs.version_tag }}
+
+    steps:
+      - name: Protect parameters
+        uses: cultureamp/protect-event-parameters@v2
+        with:
+          allowlist: "originating_url,release_version,release_type"
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+
+      - name: Tag release
+        id: tag-release
+        run: |
+          bin/ci_tag_version "${{ github.event.client_payload.release_version }}" "${{ github.event.client_payload.release_type }}"
+        env:
+          GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
+
+  publish:
+    needs: tag
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Protect parameters
+        uses: cultureamp/protect-event-parameters@v2
+        with:
+          allowlist: "originating_url,release_version,release_type"
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version-file: go.mod
+
+      - name: Release cfparams
+        uses: goreleaser/goreleaser-action@v4
+        with:
+          distribution: goreleaser
+          version: latest
+          args: release --clean --debug
+        env:
+          GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
