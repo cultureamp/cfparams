@@ -1,0 +1,11 @@
+project-name: cfparams-reporting
+pipeline-slug: cfparams
+cluster-name: cfparams
+github-repo: cfparams
+commit-branch: cfparams-autosilk-init
+create-source-security-groups: false
+create-ecr-repos: false
+restricted-accounts: false
+environments:
+secrets:
+  - cfparams/GITHUB_TOKEN
