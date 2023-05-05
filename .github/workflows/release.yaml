@@ -1,9 +1,11 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - master
+  # Release from master branch will be triggered by Buildkite,
+  # passing a signing key and allowing a release-ready
+  # build to be created.
+  repository_dispatch:
+    types: release-build
 
 jobs:
   tag:
@@ -32,7 +34,7 @@ jobs:
         run: |
           bin/ci_tag_version "${{ github.event.client_payload.release_version }}" "${{ github.event.client_payload.release_type }}"
         env:
-          GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
+          GITHUB_TOKEN: ${{ github.event.client_payload.github_write_token }}
 
   publish:
     needs: tag
@@ -61,4 +63,4 @@ jobs:
           version: latest
           args: release --clean --debug
         env:
-          GITHUB_TOKEN: ${{secrets.GH_TOKEN}}
+          GITHUB_TOKEN: ${{ github.event.client_payload.github_write_token }}

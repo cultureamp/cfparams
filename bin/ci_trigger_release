@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+set -eou pipefail
+
+DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+SEMVER='^[0-9]+\.[0-9]+\.[0-9]+$'
+
+# shellcheck source=shared.bash
+. "$DIR/shared.bash"
+
+trap finish EXIT
+
+main() {
+  local release_version;release_version="$(buildkite-agent meta-data get "release-version" --no-color --default "")"
+  local release_type;release_type="$(buildkite-agent meta-data get "release-type" --no-color)"
+
+  if [ -n "$release_version" ] && [[ ! "${release_version}" =~ ${SEMVER} ]]; then
+    echo >&2 "❌ Release version '${release_version}' must conform to semver (without prerelease): X.Y.Z. For example, '1.0.2'"
+    exit 1
+  fi
+
+  echo '+++ :github: Trigger release on Github ...'
+
+  # shellcheck disable=SC2153
+  trigger_repository_event \
+    "${GITHUB_TOKEN}" \
+    "${BUILDKITE_BUILD_URL}" \
+    "${release_version}" \
+    "${release_type}"
+
+  buildkite-agent annotate --style 'info' ":shipit: Release ${release_version} ${release_type} <a href='https://github.com/cultureamp/cfparams/actions'>triggered in Github Actions</a>."
+}
+
+trigger_repository_event() {
+    local github_write_token="$1"
+    local build_url="$2"
+    local release_version="$3"
+    local release_type="$4"
+
+    local repo_name="cfparams"
+    local payload
+
+    # Trigger a repo dispatch event. This will only trigger
+    # on the default branch of the target repository.
+    #
+    # The hook will return an error code if there is no action
+    # to execute.
+    #
+    # https://developer.github.com/v3/repos/#create-a-repository-dispatch-event
+
+    # variable names are interpolated by jq, not bash
+    #shellcheck disable=SC2016
+    local payload_template='
+    {
+        "event_type": "release-build",
+        "client_payload": {
+            "originating_url": $build_url,
+            "release_version": $release_version,
+            "release_type": $release_type,
+            "github_write_token": $github_write_token,
+        }
+    }'
+
+    local payload;
+
+    payload="$(jq --null-input \
+        --arg build_url "${build_url}" \
+        --arg release_version "${release_version}" \
+        --arg release_type "${release_type}" \
+        --arg github_write_token "${github_write_token}" \
+        --arg build_url "${build_url}" \
+        "${payload_template}")"
+
+    curl \
+      "https://api.github.com/repos/cultureamp/${repo_name}/dispatches" \
+      --fail \
+      -H "Accept: application/json" \
+      -H "Authorization: token ${github_write_token}" \
+      --request POST \
+      --data "${payload}"
+}
+
+main "$@"
