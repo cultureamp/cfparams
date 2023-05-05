@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+#
+# tag_github [tag] [commit]
+#
+# Create a tag in the Github remote repo using curl. This allows the use of a
+# personal access token with write capabilities instead of requiring a
+# writeable deploy key.
+#
+# - tag: the name of the tag to create
+# - commit: the hash of the commit at which the tag should be created.
+#
+# Expects GITHUB_TOKEN as an environment variable.
+#
+
+function main() {
+    local tag="${1}"
+    local commit="${2}"
+
+    if [ -z "$GITHUB_TOKEN" ]; then
+        >&2 echo "❌ Environment variable GITHUB_TOKEN is required"
+        exit 1
+    fi
+
+    # key is interpolated by jq, not bash
+    # shellcheck disable=SC2016
+    local tag_payload_template='
+    {
+        "tag": $tag,
+        "message": $message,
+        "object": $commit,
+        "type": "commit"
+    }'
+    # shellcheck disable=SC2016
+    local ref_payload_template='
+    {
+        "ref": $ref,
+        "sha": $tag_hash
+    }'
+
+    local payload;
+
+    # creating a tag using REST: https://docs.github.com/en/rest/reference/git#create-a-tag-object
+
+    # create the tag
+
+    payload="$(jq --null-input \
+        --arg tag "${tag}" \
+        --arg message "Version ${tag}" \
+        --arg commit "${commit}" \
+        "$tag_payload_template")"
+
+    tag_hash=$(post "cultureamp/cfparams" "git/tags" "${payload}" | jq -r '.sha')
+
+    echo "Created tag ${tag}: commit sha=${tag_hash}"
+
+    # associate a ref with the tag
+
+    payload="$(jq --null-input \
+        --arg ref "refs/tags/${tag}" \
+        --arg tag_hash "${tag_hash}" \
+        "$ref_payload_template"
+    )"
+
+    post "cultureamp/cfparams" "git/refs" "${payload}"
+}
+
+function post() {
+    local repo="${1}"
+    local action="${2}"
+    local payload="${3}"
+
+    curl \
+        --fail \
+        -X POST \
+        -H "Authorization: token $GITHUB_TOKEN" \
+        -H "Accept: application/vnd.github.v3+json" \
+        "https://api.github.com/repos/${repo}/${action}" \
+        -d "$payload"
+}
+
+main "$@"
