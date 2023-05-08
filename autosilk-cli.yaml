@@ -8,7 +8,5 @@ create-ecr-repos: false
 restricted-accounts: false
 environments:
   - continuous-integration
-policies:
-  - useCdK
 secrets:
   - cfparams/GITHUB_TOKEN
