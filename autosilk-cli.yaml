@@ -1,4 +1,4 @@
-project-name: cfparams-reporting
+project-name: cfparams
 pipeline-slug: cfparams
 cluster-name: cfparams
 github-repo: cfparams
