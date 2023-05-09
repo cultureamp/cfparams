@@ -22,6 +22,7 @@ function main() {
         version_options+=('--release-as' "${release_version}")
     fi;
 
+    # --prerelease for standard-version is broken, and any value but stable will not work
     if [ -n "$release_type" ] && [ "$release_type" != "stable" ]; then
         echo "Using pre-release designator: '${release_type}'"
         version_options+=("--prerelease" "${release_type}")

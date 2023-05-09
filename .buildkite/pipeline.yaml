@@ -1,0 +1,34 @@
+steps:
+  - block: "Release build"
+    branches:
+      - master
+    fields:
+      - select: "Prerelease?"
+        key: "release-type"
+        options:
+          - label: "Stable"
+            value: "stable"
+          - label: "Alpha"
+            value: "alpha"
+          - label: "Beta"
+            value: "beta"
+        required: true
+        default: "stable"
+      - text: "Version number"
+        key: "release-version"
+        hint: "(optional) forced version (X.X.X)"
+        required: false
+
+  - label: ":github: Trigger release"
+    branches:
+      - master
+    command: "bin/ci_trigger_release"
+    agents:
+      queue: ${BUILD_AGENT}
+    plugins:
+      - cultureamp/aws-assume-role:
+          role: ${BUILD_ROLE}
+          duration: 900 # limit role assumption validity to 15 minutes
+      - cultureamp/aws-sm#v2.2.0:
+          env:
+            GITHUB_TOKEN: /cfparams/GITHUB_TOKEN
