@@ -1,14 +1,5 @@
 #!/usr/bin/env sh
 set -eou pipefail
 
-if [ "$BUILDKITE_BRANCH" = "master" ]; then
-  branch_type="master"
-  build_agent="build-restricted"
-else
-  branch_type="development"
-  build_agent="build-unrestricted"
-fi
-
-export BRANCH_TYPE="$branch_type"
-export BUILD_ROLE="arn:aws:iam::226140413739:role/build-role-$branch_type-cfparams"
-export BUILD_AGENT="$build_agent"
+export BUILD_ROLE="arn:aws:iam::226140413739:role/build-role-master-cfparams"
+export BUILD_AGENT="build-restricted"

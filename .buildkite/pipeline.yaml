@@ -1,7 +1,7 @@
 steps:
   - block: "Release build"
     branches:
-      - master
+      - main
     fields:
       - select: "Prerelease?"
         key: "release-type"
@@ -21,7 +21,7 @@ steps:
 
   - label: ":github: Trigger release"
     branches:
-      - master
+      - main
     command: "bin/ci_trigger_release"
     agents:
       queue: ${BUILD_AGENT}

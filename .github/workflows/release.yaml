@@ -1,7 +1,7 @@
 name: Release
 
 on:
-  # Release from master branch will be triggered by Buildkite,
+  # Release from main branch will be triggered by Buildkite,
   # passing a signing key and allowing a release-ready
   # build to be created.
   repository_dispatch:
