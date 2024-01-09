@@ -3,10 +3,10 @@ kind: Component
 metadata:
   name: cfparams
   description: >
-    Wrangles CloudFormation tags. This component takes in expected parameters to a CloudFormation stack and
-    accepts input values from a file or command line
+    Wrangles CloudFormation tags. This component takes in expected parameters to a CloudFormation stack and accepts
+    input values from a file or command line
   tags:
-    - camp-foundations
+    - camp-sre
     - data-none
     - users-internal
   annotations:
