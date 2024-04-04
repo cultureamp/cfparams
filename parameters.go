@@ -112,7 +112,7 @@ func parseParameters(input *Input) error {
 
 func validateParameters(params map[string]string, specs map[string]ParameterSpec) error {
 	unexpected := []string{}
-	for name, _ := range params {
+	for name := range params {
 		if _, ok := specs[name]; !ok {
 			unexpected = append(unexpected, name)
 		}
