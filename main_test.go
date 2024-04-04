@@ -169,18 +169,24 @@ func TestTags(t *testing.T) {
 	input := &Input{
 		TagsBody: []byte("Foo: 1\nBar: two\n"),
 	}
+
 	j, err := getJsonForInput(input)
+
 	require.NoError(t, err)
+
 	type tagItem struct {
 		Key   string
 		Value string
 	}
 	var items []tagItem
+
 	err = json.Unmarshal(j, &items)
+
 	require.ElementsMatch(t, []tagItem{
 		{Key: "Foo", Value: "1"},
 		{Key: "Bar", Value: "two"},
 	}, items)
+	require.NoError(t, err)
 }
 
 func mustGetJson(t *testing.T, input *Input) string {
