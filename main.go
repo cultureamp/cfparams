@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 )
 
@@ -38,14 +37,14 @@ func main() {
 	flag.Parse()
 
 	if tagFile != "" {
-		data, err := ioutil.ReadFile(tagFile)
+		data, err := os.ReadFile(tagFile)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "cannot read tags file: %s\n", tplFile)
 			os.Exit(1)
 		}
 		input.TagsBody = data
 	} else if tplFile != "" {
-		data, err := ioutil.ReadFile(tplFile)
+		data, err := os.ReadFile(tplFile)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "cannot read CloudFormation template: %s\n", tplFile)
 			os.Exit(1)
@@ -59,7 +58,7 @@ func main() {
 	}
 
 	if paramFile != "" {
-		data, err := ioutil.ReadFile(paramFile)
+		data, err := os.ReadFile(paramFile)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "cannot read parameters file: %s\n", paramFile)
 			os.Exit(1)
