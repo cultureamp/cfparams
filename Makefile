@@ -5,6 +5,10 @@ FLAGS=-X main.Version=$(VERSION) -s -w
 cfparams: main.go parameters.go tags.go template.go parameterstore/store.go
 	go build -ldflags="$(FLAGS)"
 
+.PHONY: test
+test:
+	go test ./...
+
 .PHONY: install
 install:
 	go install -ldflags="$(FLAGS)" $(PACKAGE)

@@ -7,7 +7,7 @@ type ParsedTemplate struct {
 }
 
 type ParsedParameterSpec struct {
-	Default *string `yaml:"Default",omitempty`
+	Default *string `yaml:"Default,omitempty"`
 }
 
 type ParameterSpec struct {
