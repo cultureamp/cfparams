@@ -3,7 +3,7 @@ module github.com/cultureamp/cfparams
 go 1.22.2
 
 require (
-	github.com/aws/aws-sdk-go v1.51.30
+	github.com/aws/aws-sdk-go v1.52.2
 	github.com/sanathkr/go-yaml v0.0.0-20170819195128-ed9d249f429b
 	github.com/stretchr/testify v1.9.0
 )
