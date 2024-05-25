@@ -39,7 +39,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v4
         with:
-          version: v1.58.1
+          version: v1.58.2
           args: --timeout 5m
 
   go-mod-tidy:
