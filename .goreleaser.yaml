@@ -1,3 +1,5 @@
+version: 2
+
 builds:
   - binary: cfparams
     env:
@@ -32,14 +34,14 @@ changelog:
 
 brews:
   - name: cfparams
-    tap:
+    repository:
       owner: cultureamp
       name: homebrew-tap
     commit_author:
       name: cultureamp-ci
       email: 36431315+cultureamp-ci@users.noreply.github.com
 
-    folder: Formula
+    directory: Formula
     homepage: https://github.com/cultureamp/cfparams
     description: Wrangle parameters for AWS CloudFormation
 
