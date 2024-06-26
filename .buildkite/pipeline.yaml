@@ -32,3 +32,10 @@ steps:
       - cultureamp/aws-sm#v2.2.0:
           env:
             GITHUB_TOKEN: /cfparams/GITHUB_TOKEN
+
+notify:
+  - slack:
+      channels:
+        - "#team_sre_foundations_alerts"
+      message: ":fyii: <!subteam^S03CQLT3G2J>: A new version of CFParams is ready to be released :shipit:"
+    if: 'build.branch == "main" && build.state == "blocked"'
