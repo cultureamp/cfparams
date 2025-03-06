@@ -24,7 +24,7 @@ steps:
       - main
     command: "bin/ci_trigger_release"
     agents:
-      queue: ${BUILD_AGENT}-v6
+      queue: ${BUILD_AGENT}
     plugins:
       - cultureamp/aws-assume-role:
           role: ${BUILD_ROLE}
