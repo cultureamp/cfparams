@@ -75,8 +75,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	os.Stdout.Write(j)
-	os.Stdout.Write([]byte("\n"))
+	_, err = os.Stdout.Write(j)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %s\n", err)
+		os.Exit(1)
+	}
+
+	_, err = os.Stdout.Write([]byte("\n"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %s\n", err)
+		os.Exit(1)
+	}
 }
 
 func getJsonForInput(input *Input) ([]byte, error) {
