@@ -2,4 +2,4 @@
 set -eou pipefail
 
 export BUILD_ROLE="arn:aws:iam::226140413739:role/build-role-master-cfparams"
-export BUILD_AGENT="build-restricted"
+export BUILD_AGENT="build-restricted-arm"
