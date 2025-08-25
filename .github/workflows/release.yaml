@@ -21,13 +21,13 @@ jobs:
           allowlist: "originating_url,release_version,release_type"
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "22.15.0"
+          node-version: "22.17.0"
 
       - name: Tag release
         id: tag-release
@@ -47,7 +47,7 @@ jobs:
           allowlist: "originating_url,release_version,release_type"
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 

@@ -1,11 +1,12 @@
 package parameterstore
 
 import (
+	"context"
 	"errors"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/ssm"
 )
 
 var fakes map[string]string
@@ -31,8 +32,12 @@ func getFake(name string) (string, error) {
 }
 
 func getReal(name string) (string, error) {
-	client := ssm.New(session.Must(session.NewSession(&aws.Config{})))
-	output, err := client.GetParameter(&ssm.GetParameterInput{
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		return "", err
+	}
+	client := ssm.NewFromConfig(cfg)
+	output, err := client.GetParameter(context.TODO(), &ssm.GetParameterInput{
 		Name:           &name,
 		WithDecryption: aws.Bool(true),
 	})
