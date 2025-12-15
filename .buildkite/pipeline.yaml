@@ -26,9 +26,9 @@ steps:
     agents:
       queue: ${BUILD_AGENT}
     plugins:
-      - cultureamp/aws-assume-role:
-          role: ${BUILD_ROLE}
-          duration: 900 # limit role assumption validity to 15 minutes
+      - aws-assume-role-with-web-identity#v1.4.0:
+          role-arn: ${BUILD_ROLE}
+          role-session-duration: 900 # limit role assumption validity to 15 minutes
       - cultureamp/aws-sm#v2.2.0:
           env:
             GITHUB_TOKEN: /cfparams/GITHUB_TOKEN
