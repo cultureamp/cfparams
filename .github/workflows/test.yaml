@@ -37,7 +37,7 @@ jobs:
           cache: false # golangci-lint has its own cache
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v8
+        uses: golangci/golangci-lint-action@v9
         with:
           version: v2.6.2
           args: --timeout 5m
