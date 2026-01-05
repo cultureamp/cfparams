@@ -19,19 +19,39 @@ steps:
         hint: "(optional) forced version (X.X.X)"
         required: false
 
-  - label: ":github: Trigger release"
+  - label: ":calculator: Calculate version"
     branches:
       - main
-    command: "bin/ci_trigger_release"
+    command: "bin/ci_calculate_version"
     agents:
       queue: ${BUILD_AGENT}
     plugins:
-      - aws-assume-role-with-web-identity#v1.4.0:
-          role-arn: ${BUILD_ROLE}
-          role-session-duration: 900 # limit role assumption validity to 15 minutes
-      - cultureamp/aws-sm#v2.2.0:
-          env:
-            GITHUB_TOKEN: /cfparams/GITHUB_TOKEN
+      - chinmina/chinmina-token#v1.3.0:
+          environment:
+            - GITHUB_TOKEN=pipeline:default
+
+  - label: ":git: Create tag"
+    branches:
+      - main
+    command: "bin/ci_create_tag"
+    agents:
+      queue: ${BUILD_AGENT}
+    plugins:
+      - chinmina/chinmina-token#v1.3.0:
+          environment:
+            - GITHUB_TOKEN=pipeline:binary-release
+
+  - label: ":rocket: Release"
+    branches:
+      - main
+    command: "bin/ci_goreleaser"
+    agents:
+      queue: ${BUILD_AGENT}
+    plugins:
+      - chinmina/chinmina-token#v1.3.0:
+          environment:
+            - GITHUB_TOKEN=pipeline:binary-release
+            - GITHUB_HOMEBREW_TAP_TOKEN=org:homebrew-tap-publish
 
 notify:
   - slack:

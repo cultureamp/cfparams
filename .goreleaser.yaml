@@ -37,6 +37,7 @@ brews:
     repository:
       owner: cultureamp
       name: homebrew-tap
+      token: "{{ .Env.GITHUB_HOMEBREW_TAP_TOKEN }}"
     commit_author:
       name: cultureamp-ci
       email: 36431315+cultureamp-ci@users.noreply.github.com

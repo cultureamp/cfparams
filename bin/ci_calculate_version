@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -eou pipefail
+
+SEMVER='^[0-9]+\.[0-9]+\.[0-9]+$'
+
+function main() {
+    local release_version;release_version="$(buildkite-agent meta-data get "release-version" --default "")"
+    local release_type;release_type="$(buildkite-agent meta-data get "release-type")"
+
+    # Validate version format if provided
+    if [ -n "$release_version" ] && [[ ! "${release_version}" =~ ${SEMVER} ]]; then
+        echo >&2 "❌ Release version '${release_version}' must conform to semver (X.Y.Z). For example, '1.0.2'"
+        exit 1
+    fi
+
+    local calculated_version
+
+    # Calculate version using git-cliff if not overridden
+    if [ -z "$release_version" ]; then
+        echo "Calculating next version using git-cliff..."
+        calculated_version=$(docker-compose run --rm git-cliff --bumped-version | tail -1 | tr -d '\r')
+        # Remove leading 'v' if present
+        calculated_version="${calculated_version#v}"
+        echo "Calculated version: ${calculated_version}"
+    else
+        calculated_version="$release_version"
+        echo "Using override version: ${calculated_version}"
+    fi
+
+    # Apply prerelease suffix if needed
+    local version_tag
+    if [ "$release_type" != "stable" ]; then
+        # For prereleases, add the prerelease suffix
+        version_tag="v${calculated_version}-${release_type}.1"
+        echo "Applying prerelease designator: '${release_type}'"
+    else
+        version_tag="v${calculated_version}"
+    fi
+
+    echo "Version tag: ${version_tag}"
+
+    # Store version tag for subsequent steps
+    buildkite-agent meta-data set "version-tag" "${version_tag}"
+}
+
+main "$@"

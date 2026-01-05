@@ -1,0 +1,17 @@
+services:
+  git-cliff:
+    image: orhunp/git-cliff:latest
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    environment:
+      - GITHUB_TOKEN
+
+  goreleaser:
+    image: goreleaser/goreleaser:v2.13.2
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    environment:
+      - GITHUB_TOKEN
+      - GITHUB_HOMEBREW_TAP_TOKEN
