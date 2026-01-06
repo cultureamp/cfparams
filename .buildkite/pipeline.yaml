@@ -20,6 +20,7 @@ steps:
         required: false
 
   - label: ":calculator: Calculate version"
+    key: "calculate-version"
     # branches:
       # - main
     command: "bin/ci_calculate_version"
@@ -31,6 +32,8 @@ steps:
             - GITHUB_TOKEN=pipeline:default
 
   - label: ":git: Create tag"
+    key: "create-tag"
+    depends_on: "calculate-version"
     # branches:
     #   - main
     command: "bin/ci_create_tag"
@@ -42,6 +45,8 @@ steps:
             - GITHUB_TOKEN=pipeline:binary-release
 
   - label: ":rocket: Release"
+    key: "release"
+    depends_on: "create-tag"
     # branches:
     #   - main
     command: "bin/ci_goreleaser"
