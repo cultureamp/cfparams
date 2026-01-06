@@ -4,78 +4,23 @@ set -eou pipefail
 #
 # ci_create_tag
 #
-# Create a tag in the Github remote repo using curl. Reads version tag from
-# Buildkite meta-data and uses GITHUB_TOKEN from environment (set by Chinmina).
+# Create a tag in the Github remote repo using git CLI. Reads version tag from
+# Buildkite meta-data. Git credentials are configured by chinmina-git-credentials plugin.
 #
 
 function main() {
     local version_tag;version_tag="$(buildkite-agent meta-data get "version-tag")"
     local commit_sha;commit_sha=$(git rev-parse HEAD)
 
-    if [ -z "$GITHUB_TOKEN" ]; then
-        >&2 echo "❌ Environment variable GITHUB_TOKEN is required"
-        exit 1
-    fi
-
     echo "Creating tag '${version_tag}' at commit ${commit_sha}..."
 
-    # key is interpolated by jq, not bash
-    # shellcheck disable=SC2016
-    local tag_payload_template='
-    {
-        "tag": $tag,
-        "message": $message,
-        "object": $commit,
-        "type": "commit"
-    }'
-    # shellcheck disable=SC2016
-    local ref_payload_template='
-    {
-        "ref": $ref,
-        "sha": $tag_hash
-    }'
+    # Create annotated tag
+    git tag -a "${version_tag}" -m "Version ${version_tag}"
 
-    local payload;
-
-    # creating a tag using REST: https://docs.github.com/en/rest/reference/git#create-a-tag-object
-
-    # create the tag
-
-    payload="$(jq --null-input \
-        --arg tag "${version_tag}" \
-        --arg message "Version ${version_tag}" \
-        --arg commit "${commit_sha}" \
-        "$tag_payload_template")"
-
-    tag_hash=$(post "cultureamp/cfparams" "git/tags" "${payload}" | jq -r '.sha')
-
-    echo "Created tag ${version_tag}: commit sha=${tag_hash}"
-
-    # associate a ref with the tag
-
-    payload="$(jq --null-input \
-        --arg ref "refs/tags/${version_tag}" \
-        --arg tag_hash "${tag_hash}" \
-        "$ref_payload_template"
-    )"
-
-    post "cultureamp/cfparams" "git/refs" "${payload}"
+    # Push tag to origin
+    git push origin "${version_tag}"
 
     echo "✅ Tag ${version_tag} created successfully"
-}
-
-function post() {
-    local repo="${1}"
-    local action="${2}"
-    local payload="${3}"
-
-    curl \
-        --fail \
-        -X POST \
-        -H "Authorization: token $GITHUB_TOKEN" \
-        -H "Accept: application/vnd.github.v3+json" \
-        "https://api.github.com/repos/${repo}/${action}" \
-        -d "$payload"
 }
 
 main "$@"

@@ -19,7 +19,7 @@ steps:
         hint: "(optional) forced version (X.X.X)"
         required: false
 
-  - label: ":calculator: Calculate version"
+  - label: ":thinking_face: Calculate version"
     key: "calculate-version"
     # branches:
       # - main
@@ -40,9 +40,9 @@ steps:
     agents:
       queue: ${BUILD_AGENT}
     plugins:
-      - chinmina/chinmina-token#v1.3.0:
-          environment:
-            - GITHUB_TOKEN=pipeline:binary-release
+      - chinmina/chinmina-git-credentials#v1.5.0:
+          profile: "pipeline:binary-release"
+          exclusive: true
 
   - label: ":rocket: Release"
     key: "release"
