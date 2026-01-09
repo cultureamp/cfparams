@@ -41,7 +41,8 @@ steps:
       queue: ${BUILD_AGENT}
     plugins:
       - chinmina/chinmina-git-credentials#v1.6.0:
-          profile: "pipeline:binary-release"
+          profiles:
+            - "pipeline:binary-release"
           exclusive: true
 
   - label: ":rocket: Release"
