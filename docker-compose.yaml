@@ -6,6 +6,8 @@ services:
     working_dir: /workspace
     environment:
       - GITHUB_TOKEN
+      - RELEASE_USERNAME
+      - RELEASE_EMAIL
 
   goreleaser:
     image: goreleaser/goreleaser:v2.13.2
@@ -15,3 +17,5 @@ services:
     environment:
       - GITHUB_TOKEN
       - GITHUB_HOMEBREW_TAP_TOKEN
+      - RELEASE_USERNAME
+      - RELEASE_EMAIL

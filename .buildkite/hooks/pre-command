@@ -1,5 +1,18 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 set -eou pipefail
 
-export BUILD_ROLE="arn:aws:iam::226140413739:role/build-role-master-cfparams"
+# note: find some env definitions in the pipeline environment file
+
+# defined in the pipeline environment file, checked that they're set here
+:"${RELEASE_USERNAME:?"RELEASE_USERNAME is not set"}"
+:"${RELEASE_EMAIL:?"RELEASE_EMAIL is not set"}"
+
+:"${RELEASE_SLACK_CHANNEL:?"RELEASE_SLACK_CHANNEL is not set"}"
+:"${RELEASE_SLACK_TEAM:?"RELEASE_SLACK_TEAM is not set"}"
+
+# used by the pipeline
 export BUILD_AGENT="build-restricted-arm"
+
+# required to release and tag properly
+git config user.email "${RELEASE_EMAIL}"
+git config user.name "${RELEASE_USERNAME}"
