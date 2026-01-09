@@ -32,6 +32,9 @@ changelog:
       - "^docs:"
       - "^test:"
 
+release:
+  mode: replace
+
 brews:
   - name: cfparams
     repository:
