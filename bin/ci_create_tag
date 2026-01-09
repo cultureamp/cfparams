@@ -12,6 +12,8 @@ function main() {
     local version_tag;version_tag="$(buildkite-agent meta-data get "version-tag")"
     local commit_sha;commit_sha=$(git rev-parse HEAD)
 
+    git config --list --show-origin --show-scope | cat
+
     echo "Creating tag '${version_tag}' at commit ${commit_sha}..."
 
     # Create annotated tag
