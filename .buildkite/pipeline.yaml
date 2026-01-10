@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 steps:
   - block: "Release build"
     branches:
@@ -19,10 +20,26 @@ steps:
         hint: "(optional) forced version (X.X.X)"
         required: false
 
+  - label: ":rocket: Release"
+    key: "release"
+    branches:
+      - main
+    command: "bin/ci_release"
+    agents:
+      queue: ${BUILD_AGENT}
+    plugins:
+      - chinmina/chinmina-git-credentials#v1.6.0:
+          profiles:
+            - "pipeline:binary-release"
+          exclusive: true
+      - chinmina/chinmina-token#v1.4.0:
+          environment:
+            - GITHUB_TOKEN=pipeline:binary-release
+            - GITHUB_HOMEBREW_TAP_TOKEN=org:homebrew-tap-publish
 
 notify:
   - slack:
       channels:
-        - "#team_sre_foundations_alerts"
-      message: ":fyii: <!subteam^S03CQLT3G2J>: A new version of CFParams is ready to be released :shipit:"
+        - "$RELEASE_SLACK_CHANNEL"
+      message: ":fyii: $RELEASE_SLACK_TEAM A new version of cfparams is ready to be released :shipit:"
     if: 'build.branch == "main" && build.state == "blocked"'

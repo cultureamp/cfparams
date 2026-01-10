@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -eou pipefail
+
+#
+# ci_create_tag
+#
+# Create a tag in the Github remote repo using git CLI. Reads version tag from
+# Buildkite meta-data. Git credentials are configured by chinmina-git-credentials plugin.
+#
+
+function main() {
+    local version_tag;version_tag="$(buildkite-agent meta-data get "version-tag")"
+    local commit_sha;commit_sha=$(git rev-parse HEAD)
+
+    echo "Creating tag '${version_tag}' at commit ${commit_sha}..."
+
+    # Create annotated tag
+    git tag -a "${version_tag}" -m "Version ${version_tag} created by release pipeline"
+
+    # Push tag to origin
+    git push origin "${version_tag}"
+
+    echo "✅ Tag ${version_tag} created successfully"
+}
+
+main "$@"
