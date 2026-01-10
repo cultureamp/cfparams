@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 steps:
   - block: "Release build"
-    branches:
-      - main
+    # branches:
+    #   - main
     fields:
       - select: "Prerelease?"
         key: "release-type"
@@ -22,8 +22,8 @@ steps:
 
   - label: ":rocket: Release"
     key: "release"
-    branches:
-      - main
+    # branches:
+    #   - main
     command: "bin/ci_release"
     agents:
       queue: ${BUILD_AGENT}
