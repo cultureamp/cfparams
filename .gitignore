@@ -3,3 +3,5 @@
 
 # `make release` output directory
 /build/
+**/.claude/*.local.json
+**/CLAUDE.local.md
