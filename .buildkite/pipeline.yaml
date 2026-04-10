@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 steps:
   - block: "Release build"
     branches:
@@ -19,23 +20,33 @@ steps:
         hint: "(optional) forced version (X.X.X)"
         required: false
 
-  - label: ":github: Trigger release"
+  - label: ":rocket: Release"
+    key: "release"
     branches:
       - main
-    command: "bin/ci_trigger_release"
+    command: "bin/ci_release"
     agents:
       queue: ${BUILD_AGENT}
     plugins:
-      - aws-assume-role-with-web-identity#v1.4.0:
-          role-arn: ${BUILD_ROLE}
-          role-session-duration: 900 # limit role assumption validity to 15 minutes
-      - cultureamp/aws-sm#v2.2.0:
-          env:
-            GITHUB_TOKEN: /cfparams/GITHUB_TOKEN
+      # Configures git credentials for pushing the release tag via HTTPS.
+      # "pipeline:binary-release" is a Chinmina profile scoped to this repo only.
+      # exclusive:true prevents fallback to any other configured git credentials.
+      - chinmina/chinmina-git-credentials#v1.6.0:
+          profiles:
+            - "pipeline:binary-release"
+          exclusive: true
+      # Mints short-lived GitHub API tokens and injects them as environment variables.
+      # "pipeline:" scope = this repo only; "org:" scope = cross-repo org-level access.
+      # GITHUB_TOKEN (pipeline scope) is used by GoReleaser to create the GitHub release.
+      # GITHUB_HOMEBREW_TAP_TOKEN (org scope) allows GoReleaser to push to cultureamp/homebrew-tap.
+      - chinmina/chinmina-token#v1.4.0:
+          environment:
+            - GITHUB_TOKEN=pipeline:binary-release
+            - GITHUB_HOMEBREW_TAP_TOKEN=org:homebrew-tap-publish
 
 notify:
   - slack:
       channels:
-        - "#team_sre_foundations_alerts"
-      message: ":fyii: <!subteam^S03CQLT3G2J>: A new version of CFParams is ready to be released :shipit:"
+        - "$RELEASE_SLACK_CHANNEL"
+      message: ":fyii: $RELEASE_SLACK_TEAM A new version of cfparams is ready to be released :shipit:"
     if: 'build.branch == "main" && build.state == "blocked"'
