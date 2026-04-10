@@ -3,3 +3,7 @@
 
 # `make release` output directory
 /build/
+
+# Claude Code local config
+CLAUDE.local.md
+.claude/*.local.json
