@@ -16,11 +16,11 @@ checksum:
   name_template: "checksums.txt"
 
 archives:
-  - format: "binary"
+  - formats: [binary]
     name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
 
 snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+  version_template: "{{ incpatch .Version }}-next"
 
 changelog:
   use: github-native
@@ -32,32 +32,21 @@ changelog:
       - "^docs:"
       - "^test:"
 
-brews:
+release:
+  mode: replace
+
+homebrew_casks:
   - name: cfparams
+    skip_upload: auto
     repository:
       owner: cultureamp
       name: homebrew-tap
+      token: "{{ .Env.GITHUB_HOMEBREW_TAP_TOKEN }}"
     commit_author:
-      name: cultureamp-ci
-      email: 36431315+cultureamp-ci@users.noreply.github.com
+      name: "{{ .Env.RELEASE_USERNAME }}"
+      email: "{{ .Env.RELEASE_EMAIL }}"
 
-    directory: Formula
     homepage: https://github.com/cultureamp/cfparams
     description: Wrangle parameters for AWS CloudFormation
-
-    test: |
-      minimal = testpath/"minimal.yaml"
-      minimal.write <<~EOS
-        Parameters:
-          TestParameter:
-            Type: String
-            Default: testvalue
-        Resources:
-          S3Bucket:
-            Type: AWS::S3::Bucket
-      EOS
-      system "#{bin}/cfparams --template=minimal.yaml"
-    install: |
-      bin.install "cfparams_{{ .Os }}_{{ .Arch }}" => "cfparams"
 
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
