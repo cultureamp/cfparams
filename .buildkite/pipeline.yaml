@@ -28,10 +28,17 @@ steps:
     agents:
       queue: ${BUILD_AGENT}
     plugins:
+      # Configures git credentials for pushing the release tag via HTTPS.
+      # "pipeline:binary-release" is a Chinmina profile scoped to this repo only.
+      # exclusive:true prevents fallback to any other configured git credentials.
       - chinmina/chinmina-git-credentials#v1.6.0:
           profiles:
             - "pipeline:binary-release"
           exclusive: true
+      # Mints short-lived GitHub API tokens and injects them as environment variables.
+      # "pipeline:" scope = this repo only; "org:" scope = cross-repo org-level access.
+      # GITHUB_TOKEN (pipeline scope) is used by GoReleaser to create the GitHub release.
+      # GITHUB_HOMEBREW_TAP_TOKEN (org scope) allows GoReleaser to push to cultureamp/homebrew-tap.
       - chinmina/chinmina-token#v1.4.0:
           environment:
             - GITHUB_TOKEN=pipeline:binary-release

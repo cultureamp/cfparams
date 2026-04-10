@@ -1,6 +1,6 @@
 services:
   git-cliff:
-    image: orhunp/git-cliff:latest
+    image: orhunp/git-cliff:v2.12.0
     volumes:
       - .:/workspace
     working_dir: /workspace
