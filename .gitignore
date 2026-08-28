@@ -7,3 +7,6 @@
 # Claude Code local config
 CLAUDE.local.md
 .claude/*.local.json
+
+# devbox local state
+/.devbox/
