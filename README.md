@@ -21,16 +21,6 @@ values.
     ```
 * If it still doesn't work you may need to `hash -r` to clear the path cache or restart the shell
 
-## Local development
-
-Ensure devbox is set up as per [Local Dev Environments (LDEs) — Getting Started](https://cultureamp.atlassian.net/wiki/spaces/DE/pages/3342434338/Devbox+setup).
-
-Install dependencies:
-
-    devbox run setup
-
-Go and golangci-lint are pinned in `devbox.json`, so no separate toolchain install is needed.
-
 ## Example use-cases
 
 CloudFormation template excerpt describing an ECS service to be provisioned
