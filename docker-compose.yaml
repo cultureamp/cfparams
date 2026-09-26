@@ -11,7 +11,7 @@ services:
       - RELEASE_EMAIL
 
   goreleaser:
-    image: goreleaser/goreleaser:v2.18.1
+    image: goreleaser/goreleaser:v2.18.2
     volumes:
       - .:/workspace
     working_dir: /workspace
