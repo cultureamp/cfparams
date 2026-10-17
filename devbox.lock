@@ -43,41 +43,41 @@
         }
       }
     },
-    "golangci-lint@2.13.1": {
-      "last_modified": "2026-08-22T02:12:10Z",
-      "resolved": "github:NixOS/nixpkgs/a831408e6378bc02ebf8cc09b52c96ca86f6bab4#golangci-lint",
+    "golangci-lint@2.14.0": {
+      "last_modified": "2026-10-16T02:15:57Z",
+      "resolved": "github:NixOS/nixpkgs/f20cd90e28fe0403873f473b29e42662cd86e8c4#golangci-lint",
       "source": "devbox-search",
-      "version": "2.13.1",
+      "version": "2.14.0",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/2ddz1c6nixfk37xbw2xm8mc4791xiapp-golangci-lint-2.13.1",
+              "path": "/nix/store/w4i0gkancp3y31k83m4cicmb423sqmr7-golangci-lint-2.14.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/2ddz1c6nixfk37xbw2xm8mc4791xiapp-golangci-lint-2.13.1"
+          "store_path": "/nix/store/w4i0gkancp3y31k83m4cicmb423sqmr7-golangci-lint-2.14.0"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/ly1ppwpfd0dp43qdvlg1qrz5g75m10pq-golangci-lint-2.13.1",
+              "path": "/nix/store/5irzrcfi911y2vzf3vxp1gpn56chk6v7-golangci-lint-2.14.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/ly1ppwpfd0dp43qdvlg1qrz5g75m10pq-golangci-lint-2.13.1"
+          "store_path": "/nix/store/5irzrcfi911y2vzf3vxp1gpn56chk6v7-golangci-lint-2.14.0"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/f8g7b23rb71n4cwv3lyj870c5yk22kqy-golangci-lint-2.13.1",
+              "path": "/nix/store/wrapy98jqawf2nii5c1g1m668qks1y6k-golangci-lint-2.14.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/f8g7b23rb71n4cwv3lyj870c5yk22kqy-golangci-lint-2.13.1"
+          "store_path": "/nix/store/wrapy98jqawf2nii5c1g1m668qks1y6k-golangci-lint-2.14.0"
         }
       }
     }
