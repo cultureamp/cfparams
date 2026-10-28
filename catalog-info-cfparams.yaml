@@ -7,7 +7,7 @@ metadata:
     input values from a file or command line
   tags:
     - camp-sre
-    - data-none
+    - data-classification-none
     - users-internal
   annotations:
     github.com/project-slug: cultureamp/cfparams
