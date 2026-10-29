@@ -8,6 +8,7 @@ metadata:
   tags:
     - camp-sre
     - data-classification-none
+    - asset-criticality-high
     - users-internal
   annotations:
     github.com/project-slug: cultureamp/cfparams

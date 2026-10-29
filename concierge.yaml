@@ -1,0 +1,13 @@
+reviewGate:
+  pathRisk:
+    critical:
+      - "concierge.yaml"
+      - ".buildkite/**"
+      - ".github/workflows/**"
+      - "bin/ci_*"
+      - ".goreleaser.yaml"
+    high:
+      - "catalog-info*.yaml"
+      - "parameterstore/**"
+    low:
+      - "**/*.md"
